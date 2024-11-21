@@ -8,8 +8,9 @@ version = "0.0.1"
 authors = [
     { name = "Yankee Maharjan" },
 ]
-keywords = ["ollama", "ollama cli", "ollama python", "ollama manager"]
 description = "Manage Ollama models from your commandline!"
+keywords = ["ollama", "ollama cli", "ollama python", "ollama manager"]
+license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
