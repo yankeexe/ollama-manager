@@ -23,6 +23,7 @@ classifiers = [
 dependencies = [
     "beautifulsoup4==4.12.3",
     "click==8.1.7",
+    "ollama==0.3.3",
     "requests==2.32.3",
     "simple-term-menu==1.6.4",
     "textual==0.86.3",
