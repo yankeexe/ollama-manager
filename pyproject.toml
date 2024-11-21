@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ollama_manager"
+version = "0.0.1"
+authors = [
+    { name = "Yankee Maharjan" },
+]
+keywords = ["ollama", "ollama cli", "ollama python", "ollama manager"]
+description = "Manage Ollama models from your commandline!"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Intended Audience :: Developers",
+    "Development Status :: 3 - Alpha",
+]
+dependencies = [
+    "beautifulsoup4==4.12.3",
+    "click==8.1.7",
+    "requests==2.32.3",
+    "simple-term-menu==1.6.4",
+    "textual==0.86.3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff==0.7.4"
+]
+
+[project.urls]
+Repository = "https://github.com/yankeexe/ollama-manager"
+
+[project.scripts]
+olm = "ollama_manager.app:cli"
+
+[tool.setuptools]
+packages = ["ollama_manager"]
