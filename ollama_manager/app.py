@@ -2,7 +2,8 @@
 
 import click
 
-from ollama_manager.commands import delete_model, pull_model
+from ollama_manager.commands.delete import delete_model
+from ollama_manager.commands.pull import pull_model
 
 
 @click.group()
