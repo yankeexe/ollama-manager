@@ -1,5 +1,7 @@
 # 🦙 Ollama Manager [WIP]
 
+![Python Version](https://img.shields.io/badge/Python-3.11-brightgreen?style=flat-square)
+
 CLI app to manage Ollama models.
 
 <a href="https://youtu.be/1y2TohQdNbo">
