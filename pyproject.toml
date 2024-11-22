@@ -12,7 +12,7 @@ description = "Manage Ollama models from your commandline!"
 keywords = ["ollama", "ollama cli", "ollama python", "ollama manager"]
 license = {file = "LICENSE"}
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3.11",
     "Intended Audience :: Developers",
