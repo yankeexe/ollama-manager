@@ -18,13 +18,13 @@ CLI app to manage Ollama models.
 ## 🚀 Installation
 
 ```sh
-make setup
+pip install ollama-manager
 ```
 
-Install the app in editable mode:
+For development: installs app in editable mode
 
 ```sh
-pip install -e .
+make setup
 ```
 
 ## ✨ Usage
