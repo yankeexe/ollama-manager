@@ -24,7 +24,7 @@ setup: # Initial project setup
 	@$(PYTHON_VERSION) -m venv $(VENV_DIR)
 	@echo "Installing dependencies..."
 	@source $(VENV_DIR)/bin/activate && pip install -e .
-	@echo -e "\n✅ Done.\n🎉 Run the following commands activate the virtual environment:\n\n ➡️ source $(VENV_DIR)/bin/activate\n"
+	@echo -e "\n✅ Done.\n🎉 Run the following commands to activate the virtual environment and run the app:\n\n ➡️ source $(VENV_DIR)/bin/activate\n ➡️ olm"
 
 help: # Show this help
 	@egrep -h '\s#\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
