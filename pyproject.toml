@@ -2,9 +2,12 @@
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+packages = ["ollama_manager", "ollama_manager.commands", "ollama_manager.utils"]
+
 [project]
 name = "ollama_manager"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     { name = "Yankee Maharjan" },
 ]
@@ -37,6 +40,3 @@ Repository = "https://github.com/yankeexe/ollama-manager"
 
 [project.scripts]
 olm = "ollama_manager.app:cli"
-
-[tool.setuptools]
-packages = ["ollama_manager"]
