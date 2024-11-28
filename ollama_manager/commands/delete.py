@@ -40,7 +40,9 @@ def delete_model(multi: bool):
     """
     models = list_models()
     if models:
-        selections = handle_interaction(models, multi_select=multi)
+        selections = handle_interaction(
+            models, multi_select=multi, title="🗑️ Select model/s to delete:\n"
+        )
     else:
         print("❌ No models selected for deletion")
         sys.exit(0)

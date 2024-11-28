@@ -5,18 +5,14 @@ import ollama
 import requests
 from bs4 import BeautifulSoup
 
-from ollama_manager.utils import handle_interaction
+from ollama_manager.utils import get_session, handle_interaction, make_request
 
 
-def list_remote_model_tags(model_name: str):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    response = requests.get(
-        f"https://ollama.com/library/{model_name}/tags", headers=headers
+def list_remote_model_tags(model_name: str, session: requests.Session):
+    response = make_request(
+        session=session,
+        url=f"https://ollama.com/library/{model_name}/tags",
     )
-    response.raise_for_status()
-
     soup = BeautifulSoup(response.text, "html.parser")
 
     # Find the span with the specific attribute
@@ -56,26 +52,17 @@ def list_remote_model_tags(model_name: str):
     return results
 
 
-def list_remote_models() -> list[str] | None:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-    }
-    response = requests.get("https://ollama.com/search", headers=headers)
-    response.raise_for_status()
+def list_remote_models(session: requests.Session) -> list[str] | None:
+    response = make_request(session=session, url="https://ollama.com/search")
 
     soup = BeautifulSoup(response.text, "html.parser")
-
     # Find the span with the specific attribute
     # @NOTE: This might change with website updates.
     elements = soup.find_all("span", attrs={"x-test-search-response-title": True})
     if not elements:
         return None
 
-    names = []
-    for element in elements:
-        names.append(element.text.strip())
-
-    return names
+    return [element.text.strip() for element in elements]
 
 
 @click.command(name="pull")
@@ -85,7 +72,8 @@ def pull_model():
 
     https://ollama.dev/search
     """
-    models = list_remote_models()
+    session = get_session()
+    models = list_remote_models(session)
     if not models:
         print("❌ No models selected for download")
         sys.exit(0)
@@ -94,7 +82,9 @@ def pull_model():
         models, title="📦 Select remote Ollama model\s:\n", multi_select=False
     )
     if model_selection:
-        model_tags = list_remote_model_tags(model_selection[0])
+        model_tags = list_remote_model_tags(
+            model_name=model_selection[0], session=session
+        )
         if not model_tags:
             print(f"❌ Failed fetching tags for: {model_selection}. Please try again.")
             sys.exit(1)
