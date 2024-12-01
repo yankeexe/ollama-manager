@@ -33,7 +33,7 @@ def run_model():
     models = list_models()
     if models:
         selection = handle_interaction(
-            models, title="⚡️ Select model to run:\n", multi_select=False
+            models, title="🚀 Select model to run:\n", multi_select=False
         )
     else:
         print("❌ No models selected for running with Streamlit UI")
