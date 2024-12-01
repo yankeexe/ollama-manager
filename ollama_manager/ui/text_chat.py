@@ -61,7 +61,6 @@ def sidebar():
 
 def call_llm():
     messages = st.session_state["messages"]
-    print("model inside of ollama", st.session_state["selected_model"] or sys.argv[1])
     stream = ollama.chat(
         model=st.session_state["selected_model"] or sys.argv[1],
         stream=True,
