@@ -55,7 +55,7 @@ olm rm -m
 <details>
 <summary>Ollama Manager UI</summary>
 
-<img src="" width="800" />
+<img src="https://i.imgur.com/UqQLjXx.gif" width="800" />
 </details>
 
 Running models on Streamlit UI is a beta feature.
@@ -68,7 +68,7 @@ You need to install optional dependencies for this:
 pip install ollama-manager[ui]
 ```
 
-then use:
+then use the following command to select the model:
 
 ```sh
 olm run
