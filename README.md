@@ -12,6 +12,7 @@ CLI app to manage Ollama models.
 
 - List and Download Remote models from [Ollama library](https://ollama.dev/models)
 - Delete existing Ollama models
+- Launch models in Streamlit UI
 - Fuzzy Search
 
 
@@ -47,6 +48,30 @@ Delete multiple models
 
 ```sh
 olm rm -m
+```
+
+### Run models on the Streamlit UI
+
+<details>
+<summary>Ollama Manager UI</summary>
+
+<img src="" width="800" />
+</details>
+
+Running models on Streamlit UI is a beta feature.
+
+⚠️ Only text-based models are supported right now.
+
+You need to install optional dependencies for this:
+
+```sh
+pip install ollama-manager[ui]
+```
+
+then use:
+
+```sh
+olm run
 ```
 
 ## Getting Help
