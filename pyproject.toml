@@ -3,11 +3,11 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["ollama_manager", "ollama_manager.commands", "ollama_manager.utils"]
+packages = ["ollama_manager", "ollama_manager.commands", "ollama_manager.utils", "ollama_manager.ui"]
 
 [project]
 name = "ollama_manager"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
     { name = "Yankee Maharjan" },
 ]
