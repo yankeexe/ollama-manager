@@ -3,26 +3,7 @@ import sys
 import click
 import ollama
 
-from ollama_manager.utils import convert_bytes, handle_interaction
-
-
-def list_models() -> list[str] | None:
-    model_names = []
-
-    raw_models = ollama.list()
-    if not raw_models:
-        return None
-
-    all_raw_models = raw_models["models"]
-
-    max_length = max(len(model["name"]) for model in all_raw_models)
-
-    for model in all_raw_models:
-        model_names.append(
-            f"{model['name']:<{max_length + 5}}{convert_bytes(model['size'])}"
-        )
-
-    return model_names
+from ollama_manager.utils import handle_interaction, list_models
 
 
 @click.command(name="rm")

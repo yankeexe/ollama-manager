@@ -1,6 +1,51 @@
 import sys
 
+import ollama
+import requests
 from simple_term_menu import TerminalMenu
+
+
+def get_session() -> requests.Session:
+    session = requests.Session()
+    session.headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+
+    return session
+
+
+def list_models(only_names: bool = False) -> list[str] | None:
+    model_names = []
+
+    raw_models = ollama.list()
+    if not raw_models:
+        return None
+
+    all_raw_models = raw_models["models"]
+
+    max_length = max(len(model["name"]) for model in all_raw_models)
+
+    for model in all_raw_models:
+        if only_names:
+            model_names.append(model["name"])
+            continue
+
+        model_names.append(
+            f"{model['name']:<{max_length + 5}}{convert_bytes(model['size'])}"
+        )
+
+    return model_names
+
+
+def make_request(session: requests.Session, url: str, timeout: int = 5):
+    try:
+        response = session.get(url, timeout=timeout)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Failed to make request: {str(e)}")
+        sys.exit(1)
+
+    return response
 
 
 def convert_bytes(bytes_value):
