@@ -20,6 +20,10 @@ CLI app to manage Ollama models.
 
 ```sh
 pip install ollama-manager
+
+# OR
+
+pipx install ollama-manager
 ```
 
 For development: installs app in editable mode
@@ -50,15 +54,22 @@ Delete multiple models
 olm rm -m
 ```
 
-### Run models on the Streamlit UI
+### Run selected model
+
+Run the selected model on Ollama terminal UI:
+
+```sh
+olm run
+```
+
+---
+
+**Run models in a Streamlit UI:**
 
 <details>
 <summary>Ollama Manager UI</summary>
-
 <img src="https://i.imgur.com/UqQLjXx.gif" width="800" />
 </details>
-
-Running models on Streamlit UI is a beta feature.
 
 ⚠️ Only text-based models are supported right now.
 
@@ -71,7 +82,7 @@ pip install ollama-manager[ui]
 then use the following command to select the model:
 
 ```sh
-olm run
+olm run -ui
 ```
 
 ## Getting Help
