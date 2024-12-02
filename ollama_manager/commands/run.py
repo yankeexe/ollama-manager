@@ -7,20 +7,6 @@ import click
 
 from ollama_manager.utils import handle_interaction, list_models
 
-try:
-    import streamlit  # noqa F401
-except ImportError:
-    print(
-        """
-⚠️ Running models using ollama-manager is an optional feature.
-
-To use it install the optional dependency:
-
->> pip install ollama-manager[ui]
-"""
-    )
-    sys.exit(1)
-
 
 @click.command(name="run")
 def run_model():
@@ -29,6 +15,20 @@ def run_model():
 
     ⚠️ Only text models are supported for now.
     """
+
+    try:
+        import streamlit  # noqa F401
+    except ImportError:
+        print(
+            """
+⚠️ Running models using ollama-manager is an optional feature.
+
+To use it install the optional dependency:
+
+>> pip install ollama-manager[ui]
+"""
+        )
+    sys.exit(1)
 
     models = list_models()
     if models:
