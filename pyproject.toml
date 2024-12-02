@@ -7,7 +7,7 @@ packages = ["ollama_manager", "ollama_manager.commands", "ollama_manager.utils",
 
 [project]
 name = "ollama_manager"
-version = "0.0.6"
+version = "0.0.7"
 authors = [
     { name = "Yankee Maharjan" },
 ]
