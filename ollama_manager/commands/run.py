@@ -8,28 +8,42 @@ import click
 from ollama_manager.utils import handle_interaction, list_models
 
 
-@click.command(name="run")
-def run_model():
-    """
-    [WIP] Run Ollama models in a streamlit UI.
-
-    ⚠️ Only text models are supported for now.
-    """
-
+def streamlit_check():
     try:
         import streamlit  # noqa F401
     except ImportError:
         print(
             """
-⚠️ Running models using ollama-manager is an optional feature.
+⚠️ Running models with Streamlit UI is an optional feature.
 
 To use it install the optional dependency:
 
 >> pip install ollama-manager[ui]
 """
         )
-    sys.exit(1)
+        sys.exit(1)
 
+
+@click.option(
+    "--ui",
+    "-ui",
+    help="Run ollama models in a Streamlit UI",
+    type=bool,
+    default=False,
+    is_flag=True,
+)
+@click.command(name="run")
+def run_model(ui: bool):
+    """
+    Run the selected Ollama model.
+    By default, uses Ollama terminal UI.
+
+    To run model in a streamlit UI:
+
+    >> pip install ollama-manager[ui]
+
+    ⚠️ Only text models are supported for now.
+    """
     models = list_models()
     if models:
         selection = handle_interaction(
@@ -41,13 +55,17 @@ To use it install the optional dependency:
 
     if selection:
         normalized_selection = selection[0].split()[0]
-        script_path = (
-            Path(os.path.abspath(__file__)).parent.parent / "ui" / "text_chat.py"
-        )
-        command = ["streamlit", "run", str(script_path), "--", normalized_selection]
+        if not ui:
+            command = ["ollama", "run", normalized_selection]
+        else:
+            script_path = (
+                Path(os.path.abspath(__file__)).parent.parent / "ui" / "text_chat.py"
+            )
+
+            command = ["streamlit", "run", str(script_path), "--", normalized_selection]
 
         try:
             process = subprocess.Popen(command)
             process.wait()
         except Exception as e:
-            print(f"Error running Streamlit app: {e}")
+            print(f"Error running app: {e}")
