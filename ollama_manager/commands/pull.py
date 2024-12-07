@@ -128,12 +128,15 @@ def pull_model():
 
         final_model = selected_model_with_tag[0].split()[0]
         print(f">>> Pulling model: {final_model}")
-        response = ollama.pull(final_model, stream=True)
-        screen_padding = 100
+        try:
+            response = ollama.pull(final_model, stream=True)
+            screen_padding = 100
 
-        for data in response:
-            out = f"Status: {data.get('status')} | Completed: {format_bytes(data.get('completed'))}/{format_bytes(data.get('total'))}"
-            print(f"{out:<{screen_padding}}", end='\r', flush=True)
+            for data in response:
+                out = f"Status: {data.get('status')} | Completed: {format_bytes(data.get('completed'))}/{format_bytes(data.get('total'))}"
+                print(f"{out:<{screen_padding}}", end='\r', flush=True)
 
-        print(f'\r{" " * screen_padding}\r') # Clear screen
-        print(f"✅ {final_model} model is ready for use!\n\n>>> olm run\n")
+            print(f'\r{" " * screen_padding}\r') # Clear screen
+            print(f"✅ {final_model} model is ready for use!\n\n>>> olm run\n")
+        except Exception as e:
+            print(f"❌ Failed downloading {final_model}\n{str(e)}")
