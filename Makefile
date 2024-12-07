@@ -10,7 +10,8 @@ check: # Ruff check
 	@echo "✅ Check complete!"
 
 fix: # Fix auto-fixable linting issues
-	@ruff check app.py --fix
+	@ruff check ollama_manager --fix
+	@echo "✅ Check complete!"
 
 clean: # Clean temporary files
 	@rm -rf __pycache__ .pytest_cache
