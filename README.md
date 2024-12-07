@@ -54,6 +54,12 @@ Delete multiple models
 olm rm -m
 ```
 
+Delete model without confirmation prompt:
+
+```sh
+olm rm -y
+```
+
 ### Run selected model
 
 Run the selected model on Ollama terminal UI:
