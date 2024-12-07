@@ -4,8 +4,32 @@ import click
 import ollama
 import requests
 from bs4 import BeautifulSoup
-
 from ollama_manager.utils import get_session, handle_interaction, make_request
+
+
+def format_bytes(size_bytes: int) -> str:
+    """
+    Formats a size in bytes to a human-readable string with suffix.
+
+    Args:
+        size_bytes: Integer representing size in bytes
+
+    Returns:
+        Formatted size string with appropriate suffix
+    """
+    # Precomputed suffix table with single-pass conversion
+    _SUFFIXES = ("B", "KB", "MB", "GB", "TB", "PB")
+
+    if not size_bytes:
+        return "0B"
+
+    # Bitwise optimization for log2-based scaling
+    magnitude = (size_bytes.bit_length() - 1) // 10
+
+    # Clamp magnitude to prevent index out of bounds
+    magnitude = min(magnitude, len(_SUFFIXES) - 1)
+    scaled_size = size_bytes / (1024**magnitude)
+    return f"{scaled_size:.2f} {_SUFFIXES[magnitude]}"
 
 
 def list_remote_model_tags(model_name: str, session: requests.Session):
@@ -105,5 +129,11 @@ def pull_model():
         final_model = selected_model_with_tag[0].split()[0]
         print(f">>> Pulling model: {final_model}")
         response = ollama.pull(final_model, stream=True)
+        screen_padding = 100
+
         for data in response:
-            print(data)
+            out = f"Status: {data.get('status')} | Completed: {format_bytes(data.get('completed'))}/{format_bytes(data.get('total'))}"
+            print(f"{out:<{screen_padding}}", end='\r', flush=True)
+
+        print(f'\r{" " * screen_padding}\r') # Clear screen
+        print(f"✅ {final_model} model is ready for use!\n\n>>> olm run\n")
