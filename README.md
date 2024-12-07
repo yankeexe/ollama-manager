@@ -1,6 +1,8 @@
 # 🦙 Ollama Manager
 
 ![Python Version](https://img.shields.io/badge/Python-3.11-brightgreen?style=flat-square)
+![Downloads](https://static.pepy.tech/badge/ollama-manager)
+
 
 CLI app to manage Ollama models.
 
