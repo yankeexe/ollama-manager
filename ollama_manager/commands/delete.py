@@ -15,7 +15,15 @@ from ollama_manager.utils import handle_interaction, list_models
     default=False,
     is_flag=True,
 )
-def delete_model(multi: bool):
+@click.option(
+    "--yes",
+    "-y",
+    help="Skip confirmation prompt for deletion",
+    type=bool,
+    default=False,
+    is_flag=True,
+)
+def delete_model(multi: bool, yes: bool):
     """
     Deletes the selected model/s
     """
@@ -31,5 +39,16 @@ def delete_model(multi: bool):
     if selections:
         for selection in selections:
             normalized_selection = selection.split()[0]
-            ollama.delete(normalized_selection)
+            if not yes:
+                confirm = input(
+                    f"Are you sure you want to delete '\033[91m{normalized_selection}\033[0m'? \n[y(yes) | n(no)] "
+                )
+
+                if confirm.strip() in ("yes", "y"):
+                    ollama.delete(normalized_selection)
+                else:
+                    print("❌ Exited delete mode.")
+                    sys.exit(0)
+            else:
+                ollama.delete(normalized_selection)
             print(f"🗑️ Deleted model: {normalized_selection}")
