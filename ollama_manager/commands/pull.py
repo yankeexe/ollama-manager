@@ -4,6 +4,7 @@ import click
 import ollama
 import requests
 from bs4 import BeautifulSoup
+
 from ollama_manager.utils import get_session, handle_interaction, make_request
 
 
@@ -134,9 +135,9 @@ def pull_model():
 
             for data in response:
                 out = f"Status: {data.get('status')} | Completed: {format_bytes(data.get('completed'))}/{format_bytes(data.get('total'))}"
-                print(f"{out:<{screen_padding}}", end='\r', flush=True)
+                print(f"{out:<{screen_padding}}", end="\r", flush=True)
 
-            print(f'\r{" " * screen_padding}\r') # Clear screen
+            print(f'\r{" " * screen_padding}\r')  # Clear screen
             print(f"✅ {final_model} model is ready for use!\n\n>>> olm run\n")
         except Exception as e:
             print(f"❌ Failed downloading {final_model}\n{str(e)}")
