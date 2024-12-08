@@ -27,10 +27,8 @@ To use it install the optional dependency:
 @click.option(
     "--ui",
     "-ui",
-    help="Run ollama models in a Streamlit UI",
-    type=bool,
-    default=False,
-    is_flag=True,
+    help="Run ollama models in a Streamlit UI, use either 'text' or 'vision'",
+    type=str,
 )
 @click.command(name="run")
 def run_model(ui: bool):
@@ -58,9 +56,11 @@ def run_model(ui: bool):
         if not ui:
             command = ["ollama", "run", normalized_selection]
         else:
-            script_path = (
-                Path(os.path.abspath(__file__)).parent.parent / "ui" / "text_chat.py"
-            )
+            base_path = Path(os.path.abspath(__file__)).parent.parent / "ui"
+            if ui.strip() == "text":
+                script_path = base_path / "text_chat.py"
+            elif ui.strip() == "vision":
+                script_path = base_path / "image_chat.py"
 
             command = ["streamlit", "run", str(script_path), "--", normalized_selection]
 
