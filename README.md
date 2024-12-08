@@ -79,8 +79,6 @@ olm run
 <img src="https://i.imgur.com/UqQLjXx.gif" width="800" />
 </details>
 
-⚠️ Only text-based models are supported right now.
-
 You need to install optional dependencies for this:
 
 ```sh
@@ -90,7 +88,12 @@ pip install ollama-manager[ui]
 then use the following command to select the model:
 
 ```sh
-olm run -ui
+# For Text Models
+olm run -ui text
+
+# For Vision Models
+
+olm run -ui vision
 ```
 
 ## Getting Help
