@@ -86,11 +86,11 @@ def run():
     st.header("🦙 Ollama Manager: Chat Application")
 
     for message in st.session_state["messages"]:
-        match message["role"]:
-            case "assistant":
-                st.chat_message("assistant").write(message["content"])
-            case "user":
-                st.chat_message("human").write(message["content"])
+        message_role = message.get("role")
+        if message_role == "assistant":
+            st.chat_message("assistant").write(message["content"])
+        if message_role == "user":
+            st.chat_message("human").write(message["content"])
 
     chat_input = st.chat_input(
         placeholder="Write your message...",
