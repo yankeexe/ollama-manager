@@ -208,7 +208,7 @@ def handle_hugging_face(payload: list[str]):
 @click.command(name="pull")
 @click.option(
     "--hugging_face",
-    "--hf",
+    "-hf",
     help="Pull models from Hugging Face",
     type=bool,
     default=False,
@@ -231,7 +231,7 @@ def pull_model(hugging_face: bool, query: str, limit: int):
     session = get_session()
     if hugging_face:
         if not query:
-            query = input("Enter the model query for hugging face: ")
+            query = input("🤗 hf search: ")
         models = list_hugging_face_models(session, limit, query)
     else:
         models = list_remote_models(session)
