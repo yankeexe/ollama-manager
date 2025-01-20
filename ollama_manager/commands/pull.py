@@ -185,24 +185,19 @@ def list_hugging_face_model_quantization(session: requests.Session, model_name: 
     for file in files:
         filename = file.get("rfilename")
         if filename.endswith(".gguf"):
-            normalized_filename = extract_quantization(filename)
-            if not normalized_filename:
+            quantization = extract_quantization(filename)
+            if not quantization:
                 continue
 
             payload.append(
                 {
-                    "title": normalized_filename,
+                    "title": quantization,
                     "size": format_bytes(file.get("size")),
                     "updated": last_modified,
                 }
             )
 
     return payload
-
-
-def handle_hugging_face(payload: list[str]):
-    for data in payload:
-        pass
 
 
 @click.command(name="pull")
