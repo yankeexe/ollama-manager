@@ -42,6 +42,20 @@ make setup
 olm pull
 ```
 
+Pull Hugging Face models:
+
+```sh
+olm pull -hf
+
+# With query:
+
+olm pull -hf -q llama3.2
+
+# With limit:
+
+olm pull -hf -q llama3.2 -l 10
+```
+
 ### Delete Local Model/s
 
 Delete a single model
