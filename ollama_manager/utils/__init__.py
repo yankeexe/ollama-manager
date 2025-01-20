@@ -37,9 +37,11 @@ def list_models(only_names: bool = False) -> list[str] | None:
     return model_names
 
 
-def make_request(session: requests.Session, url: str, timeout: int = 5):
+def make_request(
+    session: requests.Session, url: str, timeout: int = 5, params: dict[str, str] = None
+):
     try:
-        response = session.get(url, timeout=timeout)
+        response = session.get(url, timeout=timeout, params=params)
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         print(f"❌ Failed to make request: {str(e)}")

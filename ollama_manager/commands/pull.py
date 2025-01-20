@@ -1,3 +1,5 @@
+import datetime
+import re
 import sys
 
 import click
@@ -6,6 +8,63 @@ import requests
 from bs4 import BeautifulSoup
 
 from ollama_manager.utils import get_session, handle_interaction, make_request
+
+
+def extract_quantization(text):
+    """
+    Extracts the quantization information from a model filename.
+
+    Args:
+        text: The model filename string.
+
+    Returns:
+        The quantization string (e.g., "Q2_K", "IQ4_K") or None if not found.
+    """
+    match = re.search(r"IQ\w+\.", text)  # Check for "IQ" first
+    if match:
+        return match.group(0)[:-1]
+    match = re.search(r"Q\w+\.", text)  # Check for "Q" if "IQ" not found
+    if match:
+        return match.group(0)[:-1]
+    return None
+
+
+def humanized_relative_time(datetime_str: str):
+    """
+    Converts a datetime string in ISO 8601 format to a human-readable relative time.
+
+    Args:
+        datetime_str: The datetime string in "YYYY-MM-DDTHH:MM:SS.mmmZ" format.
+
+    Returns:
+        A human-readable string representing the relative time, or the original
+        datetime string if it cannot be parsed.
+    """
+    try:
+        dt = datetime.datetime.fromisoformat(datetime_str.replace("Z", "+00:00"))
+    except ValueError:
+        return datetime_str  # Return original if parsing fails
+
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    delta = now - dt
+
+    if delta < datetime.timedelta(minutes=1):
+        return "just now"
+    elif delta < datetime.timedelta(hours=1):
+        minutes = int(delta.total_seconds() // 60)
+        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+    elif delta < datetime.timedelta(days=1):
+        hours = int(delta.total_seconds() // 3600)
+        return f"{hours} hour{'s' if hours > 1 else ''} ago"
+    elif delta < datetime.timedelta(days=30):
+        days = delta.days
+        return f"{days} day{'s' if days > 1 else ''} ago"
+    elif delta < datetime.timedelta(days=365):
+        months = int(delta.days // 30)
+        return f"{months} month{'s' if months > 1 else ''} ago"
+    else:
+        years = int(delta.days // 365)
+        return f"{years} year{'s' if years > 1 else ''} ago"
 
 
 def format_bytes(size_bytes: int) -> str:
@@ -90,15 +149,93 @@ def list_remote_models(session: requests.Session) -> list[str] | None:
     return [element.text.strip() for element in elements]
 
 
+def list_hugging_face_models(
+    session: requests.Session, limit: int, query: str
+) -> list[dict[str, str]]:
+    BASE_API_ENDPOINT = "https://huggingface.co/api/models"
+    params = {
+        "filter": "gguf",
+        "sort": "downloads",
+        "direction": "-1",
+        "limit": limit,
+        "full": False,
+        "config": False,
+        "search": query,
+    }
+    res = make_request(session, url=BASE_API_ENDPOINT, params=params)
+    hf_response = res.json()
+    payload = []
+
+    if not hf_response:
+        print(f"❌ Model not found: {query}")
+        sys.exit(1)
+
+    for response in hf_response:
+        payload.append(response.get("modelId"))
+    return payload
+
+
+def list_hugging_face_model_quantization(session: requests.Session, model_name: str):
+    API_ENDPOINT = f"https://huggingface.co/api/models/{model_name}?blobs=true"
+    res = make_request(session=session, url=API_ENDPOINT)
+    hf_response = res.json()
+    payload = []
+    files = hf_response.get("siblings")
+    last_modified = humanized_relative_time(hf_response.get("lastModified"))
+    for file in files:
+        filename = file.get("rfilename")
+        if filename.endswith(".gguf"):
+            normalized_filename = extract_quantization(filename)
+            if not normalized_filename:
+                continue
+
+            payload.append(
+                {
+                    "title": normalized_filename,
+                    "size": format_bytes(file.get("size")),
+                    "updated": last_modified,
+                }
+            )
+
+    return payload
+
+
+def handle_hugging_face(payload: list[str]):
+    for data in payload:
+        pass
+
+
 @click.command(name="pull")
-def pull_model():
+@click.option(
+    "--hugging_face",
+    "--hf",
+    help="Pull models from Hugging Face",
+    type=bool,
+    default=False,
+    is_flag=True,
+)
+@click.option("--query", "-q", help="Query for hugging face model", type=str)
+@click.option(
+    "--limit",
+    "-l",
+    help="Limit the number of output from hugging face. Default is 20",
+    type=int,
+    default=20,
+)
+def pull_model(hugging_face: bool, query: str, limit: int):
     """
     Pull models from Ollama library:
 
     https://ollama.dev/search
     """
     session = get_session()
-    models = list_remote_models(session)
+    if hugging_face:
+        if not query:
+            query = input("Enter the model query for hugging face: ")
+        models = list_hugging_face_models(session, limit, query)
+    else:
+        models = list_remote_models(session)
+
     if not models:
         print("❌ No models selected for download")
         sys.exit(0)
@@ -107,27 +244,43 @@ def pull_model():
         models, title="📦 Select remote Ollama model\s:\n", multi_select=False
     )
     if model_selection:
-        model_tags = list_remote_model_tags(
-            model_name=model_selection[0], session=session
-        )
+        if hugging_face:
+            model_tags = list_hugging_face_model_quantization(
+                session=session, model_name=model_selection[0]
+            )
+        else:
+            model_tags = list_remote_model_tags(
+                model_name=model_selection[0], session=session
+            )
         if not model_tags:
             print(f"❌ Failed fetching tags for: {model_selection}. Please try again.")
             sys.exit(1)
 
         max_length = max(len(f"{model_selection}:{tag['title']}") for tag in model_tags)
 
-        model_name_with_tags = [
-            f"{model_selection[0]}:{tag['title']:<{max_length + 5}}{tag['size']:<{max_length + 5}}{tag['updated']}"
-            for tag in model_tags
-        ]
+        if hugging_face:
+            model_name_with_tags = [
+                f"{tag['title']:<{max_length}}{tag['size']:<{max_length}}{tag['updated']}"
+                for tag in model_tags
+            ]
+        else:
+            model_name_with_tags = [
+                f"{model_selection[0]}:{tag['title']:<{max_length + 5}}{tag['size']:<{max_length + 5}}{tag['updated']}"
+                for tag in model_tags
+            ]
         selected_model_with_tag = handle_interaction(
-            model_name_with_tags, title="🔖 Select tag to download:\n"
+            model_name_with_tags, title="🔖 Select tag/quantization:\n"
         )
         if not selected_model_with_tag:
             print("No tag selected for the model")
             sys.exit(1)
 
-        final_model = selected_model_with_tag[0].split()[0]
+        if hugging_face:
+            final_model = (
+                f"hf.co/{model_selection[0]}:{model_name_with_tags[0]}".split()[0]
+            )
+        else:
+            final_model = selected_model_with_tag[0].split()[0]
         print(f">>> Pulling model: {final_model}")
         try:
             response = ollama.pull(final_model, stream=True)
