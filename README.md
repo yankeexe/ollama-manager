@@ -12,7 +12,7 @@ CLI app to manage Ollama models.
 
 ## ⚡️ Features
 
-- List and Download Remote models from [Ollama library](https://ollama.dev/models)
+- List and Download Remote models from [Ollama library](https://ollama.dev/models) or [Hugging Face](https://huggingface.co/models?sort=trending&search=gguf)
 - Delete existing Ollama models
 - Launch models in Streamlit UI
 - Fuzzy Search
