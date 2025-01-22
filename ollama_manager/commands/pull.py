@@ -224,7 +224,6 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
 
     https://ollama.dev/search
     """
-    print("Pulling Model....")
     async with httpx.AsyncClient() as client:
         if hugging_face:
             if not query:
