@@ -224,13 +224,21 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
 
     https://ollama.dev/search
     """
+    from rich.console import Console
+
+    console = Console()
     async with httpx.AsyncClient() as client:
         if hugging_face:
             if not query:
                 query = input("🤗 hf search: ")
-            models = await list_hugging_face_models(client, limit, query)
+
+            with console.status("Fetching models from Hugging Face", spinner="dots"):
+                models = await list_hugging_face_models(client, limit, query)
         else:
-            models = await list_remote_models(client)
+            with console.status(
+                "Fetching models from Ollama directory", spinner="dots"
+            ):
+                models = await list_remote_models(client)
 
         if not models:
             print("❌ No models selected for download")
@@ -241,13 +249,15 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
         )
         if model_selection:
             if hugging_face:
-                model_tags = await list_hugging_face_model_quantization(
-                    client=client, model_name=model_selection[0]
-                )
+                with console.status("Fetching quantization levels", spinner="dots"):
+                    model_tags = await list_hugging_face_model_quantization(
+                        client=client, model_name=model_selection[0]
+                    )
             else:
-                model_tags = await list_remote_model_tags(
-                    model_name=model_selection[0], client=client
-                )
+                with console.status("Fetching model tags", spinner="dots"):
+                    model_tags = await list_remote_model_tags(
+                        model_name=model_selection[0], client=client
+                    )
             if not model_tags:
                 print(
                     f"❌ Failed fetching tags for: {model_selection}. Please try again."
