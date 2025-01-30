@@ -159,7 +159,13 @@ async def list_hugging_face_models(
         "config": False,
         "search": query,
     }
-    res = await client.get(url=BASE_API_ENDPOINT, params=params)
+    try:
+        res = await client.get(url=BASE_API_ENDPOINT, params=params)
+    except Exception:
+        print(
+            "❌ Failed fetching model from Hugging Face.\n>>> 🔁 Try again\n>>> 🛜 Make sure you are connected to the internet."
+        )
+        sys.exit(1)
     hf_response = res.json()
     payload = []
 
@@ -175,9 +181,15 @@ async def list_hugging_face_models(
 async def list_hugging_face_model_quantization(
     client: httpx.AsyncClient, model_name: str
 ):
-    res = await client.get(
-        url=f"https://huggingface.co/api/models/{model_name}?blobs=true"
-    )
+    try:
+        res = await client.get(
+            url=f"https://huggingface.co/api/models/{model_name}?blobs=true"
+        )
+    except Exception:
+        print(
+            "❌ Failed fetching model from Hugging Face.\n>>> 🔁 Try again\n>>> 🛜 Make sure you are connected to the internet."
+        )
+        sys.exit(1)
     hf_response = res.json()
     payload = []
     files = hf_response.get("siblings")

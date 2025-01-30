@@ -27,7 +27,11 @@ def get_session() -> requests.Session:
 def list_models(only_names: bool = False) -> list[str] | None:
     model_names = []
 
-    raw_models = ollama.list()
+    try:
+        raw_models = ollama.list()
+    except Exception:
+        print("❌ Could not fetch models.\n>>> 🦙Is Ollama running?")
+        sys.exit(1)
     if not raw_models:
         return None
 
