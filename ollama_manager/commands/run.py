@@ -43,6 +43,14 @@ def run_model(ui: bool):
     ⚠️ Only text models are supported for now.
     """
     models = list_models()
+    if ui.strip() not in ["text", "vision", ""]:
+        print(
+            f"❌ Invalid UI option: '{ui.strip()}'.\n"
+            "Please use 'text' or 'vision'.\n\n"
+            "⚠️ Only text models are supported for now."
+        )
+        sys.exit(1)
+
     if models:
         selection = handle_interaction(
             models, title="🚀 Select model to run:\n", multi_select=False
@@ -57,6 +65,7 @@ def run_model(ui: bool):
             command = ["ollama", "run", normalized_selection]
         else:
             base_path = Path(os.path.abspath(__file__)).parent.parent / "ui"
+            script_path = base_path / "text_chat.py"
             if ui.strip() == "text":
                 script_path = base_path / "text_chat.py"
             elif ui.strip() == "vision":
