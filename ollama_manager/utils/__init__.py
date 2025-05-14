@@ -5,6 +5,7 @@ from functools import wraps
 import ollama
 import requests
 from simple_term_menu import TerminalMenu
+from ollama._types import ListResponse
 
 
 def coro(f):
@@ -28,24 +29,25 @@ def list_models(only_names: bool = False) -> list[str] | None:
     model_names = []
 
     try:
-        raw_models = ollama.list()
+        raw_models: ListResponse = ollama.list()
     except Exception:
         print("❌ Could not fetch models.\n>>> 🦙Is Ollama running?")
         sys.exit(1)
+
     if not raw_models:
         return None
 
-    all_raw_models = raw_models["models"]
+    all_raw_models = raw_models.models
 
-    max_length = max(len(model["name"]) for model in all_raw_models)
+    max_length = max(len(model.model) for model in all_raw_models)
 
     for model in all_raw_models:
         if only_names:
-            model_names.append(model["name"])
+            model_names.append(model.model)
             continue
 
         model_names.append(
-            f"{model['name']:<{max_length + 5}}{convert_bytes(model['size'])}"
+            f"{model.model:<{max_length + 5}}{convert_bytes(model.size)}"
         )
 
     return model_names
