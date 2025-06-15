@@ -110,6 +110,31 @@ olm run -ui text
 olm run -ui vision
 ```
 
+### List models
+
+List your downloaded ollama models with a rich formatted table:
+
+```sh
+olm list
+```
+
+Sort models by `name`, `date` or `size` (default is `name`):
+
+```sh
+olm list --sort name  # Sort alphabetically by model name
+olm list -s date      # Sort by modification date
+olm list -s size      # Sort by model size
+```
+
+Control the sort order with `--order` or `-o` (default is `asc`):
+
+```sh
+olm list --sort size --order desc  # Largest models first
+olm list -s date -o desc           # Most recently modified first
+olm list -s name -o asc            # Alphabetical A-Z
+```
+
+
 ## Getting Help
 
 ```sh
