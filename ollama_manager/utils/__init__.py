@@ -7,6 +7,8 @@ import requests
 from simple_term_menu import TerminalMenu
 from ollama._types import ListResponse
 
+import datetime
+
 
 def coro(f):
     @wraps(f)
@@ -64,6 +66,44 @@ def make_request(
         sys.exit(1)
 
     return response
+
+
+def humanized_relative_time(datetime_str: str):
+    """
+    Converts a datetime string in ISO 8601 format to a human-readable relative time.
+
+    Args:
+        datetime_str: The datetime string in "YYYY-MM-DDTHH:MM:SS.mmmZ" format.
+
+    Returns:
+        A human-readable string representing the relative time, or the original
+        datetime string if it cannot be parsed.
+    """
+    try:
+        dt = datetime.datetime.fromisoformat(datetime_str.replace("Z", "+00:00"))
+    except ValueError:
+        return datetime_str  # Return original if parsing fails
+
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+    delta = now - dt
+
+    if delta < datetime.timedelta(minutes=1):
+        return "just now"
+    elif delta < datetime.timedelta(hours=1):
+        minutes = int(delta.total_seconds() // 60)
+        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+    elif delta < datetime.timedelta(days=1):
+        hours = int(delta.total_seconds() // 3600)
+        return f"{hours} hour{'s' if hours > 1 else ''} ago"
+    elif delta < datetime.timedelta(days=30):
+        days = delta.days
+        return f"{days} day{'s' if days > 1 else ''} ago"
+    elif delta < datetime.timedelta(days=365):
+        months = int(delta.days // 30)
+        return f"{months} month{'s' if months > 1 else ''} ago"
+    else:
+        years = int(delta.days // 365)
+        return f"{years} year{'s' if years > 1 else ''} ago"
 
 
 def convert_bytes(bytes_value):

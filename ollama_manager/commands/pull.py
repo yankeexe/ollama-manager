@@ -1,4 +1,3 @@
-import datetime
 import re
 import sys
 
@@ -6,8 +5,9 @@ import click
 import httpx
 import ollama
 from bs4 import BeautifulSoup, SoupStrainer
+from rich.console import Console
 
-from ollama_manager.utils import coro, handle_interaction
+from ollama_manager.utils import coro, handle_interaction, humanized_relative_time
 
 
 def extract_quantization(text):
@@ -27,44 +27,6 @@ def extract_quantization(text):
     if match:
         return match.group(0)[:-1]
     return None
-
-
-def humanized_relative_time(datetime_str: str):
-    """
-    Converts a datetime string in ISO 8601 format to a human-readable relative time.
-
-    Args:
-        datetime_str: The datetime string in "YYYY-MM-DDTHH:MM:SS.mmmZ" format.
-
-    Returns:
-        A human-readable string representing the relative time, or the original
-        datetime string if it cannot be parsed.
-    """
-    try:
-        dt = datetime.datetime.fromisoformat(datetime_str.replace("Z", "+00:00"))
-    except ValueError:
-        return datetime_str  # Return original if parsing fails
-
-    now = datetime.datetime.now(tz=datetime.timezone.utc)
-    delta = now - dt
-
-    if delta < datetime.timedelta(minutes=1):
-        return "just now"
-    elif delta < datetime.timedelta(hours=1):
-        minutes = int(delta.total_seconds() // 60)
-        return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
-    elif delta < datetime.timedelta(days=1):
-        hours = int(delta.total_seconds() // 3600)
-        return f"{hours} hour{'s' if hours > 1 else ''} ago"
-    elif delta < datetime.timedelta(days=30):
-        days = delta.days
-        return f"{days} day{'s' if days > 1 else ''} ago"
-    elif delta < datetime.timedelta(days=365):
-        months = int(delta.days // 30)
-        return f"{months} month{'s' if months > 1 else ''} ago"
-    else:
-        years = int(delta.days // 365)
-        return f"{years} year{'s' if years > 1 else ''} ago"
 
 
 def format_bytes(size_bytes: int) -> str:
@@ -276,7 +238,6 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
 
     https://ollama.dev/search
     """
-    from rich.console import Console
 
     console = Console()
     async with httpx.AsyncClient() as client:
