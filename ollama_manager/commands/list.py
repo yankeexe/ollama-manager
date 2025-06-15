@@ -7,20 +7,20 @@ from ollama_manager.utils import convert_bytes, humanized_relative_time
 
 @click.command(name="list")
 @click.option(
-    "--sort-by",
+    "--sort",
     "-s",
     type=click.Choice(["name", "date", "size"]),
     default="name",
     help="Sort models by name, modified date, or size",
 )
 @click.option(
-    "--direction",
-    "-d",
+    "--order",
+    "-o",
     type=click.Choice(["asc", "desc"]),
     default="asc",
-    help="Sort direction (ascending or descending)",
+    help="Sort order (ascending or descending)",
 )
-def list_ollama_models(sort_by, direction):
+def list_ollama_models(sort, order):
     """
     List your ollama models
     """
@@ -28,12 +28,12 @@ def list_ollama_models(sort_by, direction):
     models = model_metadata.models
 
     # Sort models based on user preference
-    if sort_by == "name":
-        models.sort(key=lambda m: m.model, reverse=(direction == "desc"))
-    elif sort_by == "date":
-        models.sort(key=lambda m: m.modified_at, reverse=(direction == "desc"))
-    elif sort_by == "size":
-        models.sort(key=lambda m: m.size, reverse=(direction == "desc"))
+    if sort == "name":
+        models.sort(key=lambda m: m.model, reverse=(order == "desc"))
+    elif sort == "date":
+        models.sort(key=lambda m: m.modified_at, reverse=(order == "desc"))
+    elif sort == "size":
+        models.sort(key=lambda m: m.size, reverse=(order == "desc"))
 
     console = Console()
     table = Table(title="Ollama Models")
