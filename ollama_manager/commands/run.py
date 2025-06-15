@@ -43,7 +43,7 @@ def run_model(ui: bool):
     ⚠️ Only text models are supported for now.
     """
     models = list_models()
-    if ui.strip() not in ["text", "vision", ""]:
+    if ui and ui.strip() not in ["text", "vision", ""]:
         print(
             f"❌ Invalid UI option: '{ui.strip()}'.\n"
             "Please use 'text' or 'vision'.\n\n"
