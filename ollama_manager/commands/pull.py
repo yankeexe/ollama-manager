@@ -96,41 +96,81 @@ async def list_remote_model_tags(model_name: str, client: httpx.AsyncClient):
     response = await client.get(f"https://ollama.com/library/{model_name}/tags")
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Find the span with the specific attribute
-    # @NOTE: This might change with website updates.
-    elements = soup.find_all(
-        "div", class_="break-all font-medium text-gray-900 group-hover:underline"
-    )
+    model_entries = soup.select("div.group")
+    if not model_entries:
+        return []
 
-    if not elements:
-        return None
+    tags = []
+    for entry in model_entries:
+        # Extract model name and tag
+        name_element = entry.select_one("span.group-hover\\:underline")
+        if not name_element:
+            continue
 
-    results = []
-    for element in elements:
-        # Get the title
-        title = element.text.strip()
+        full_name = name_element.text.strip()
+        tag_parts = full_name.split(":")
+        tag_name = tag_parts[1] if len(tag_parts) > 1 else "latest"
 
-        # Find the next sibling div containing metadata
-        # @NOTE: This might change with website updates.
-        metadata_div = element.find_next(
-            "div", class_="flex items-baseline space-x-1 text-[13px] text-neutral-500"
+        size_element = entry.select_one("p.col-span-2") or entry.select_one(
+            "div.text-neutral-500"
+        )
+        size = None
+        if size_element:
+            size_text = size_element.get_text(strip=True)
+            size_match = re.search(r"(\d+(?:\.\d+)?[GMKT]B)", size_text)
+            if size_match:
+                size = size_match.group(1)
+
+        context_element = (
+            entry.select("p.col-span-2")[1]
+            if len(entry.select("p.col-span-2")) > 1
+            else None
+        )
+        context_window = None
+        if context_element:
+            context_window = context_element.get_text(strip=True)
+        else:
+            all_text = entry.get_text(separator=" ", strip=True)
+            context_match = re.search(r"(\d+[KM]?) context window", all_text)
+            if context_match:
+                context_window = context_match.group(1)
+
+        input_element = entry.select_one("div.col-span-2") or entry.select_one(
+            "div.text-neutral-500"
+        )
+        input_types = []
+        if input_element:
+            input_text = input_element.get_text(strip=True)
+            if "Text" in input_text:
+                input_types.append("Text")
+            if "Vision" in input_text:
+                input_types.append("Vision")
+
+        timestamp_element = entry.select_one(
+            "div.flex.text-neutral-500.text-xs"
+        ) or entry.select_one("div.flex.sm\\:hidden")
+        updated = None
+        if timestamp_element:
+            timestamp_text = timestamp_element.get_text(strip=True)
+            time_match = re.search(r"(\d+\s+\w+\s+ago)", timestamp_text)
+            if time_match:
+                updated = time_match.group(1)
+
+        hash_element = entry.select_one("span.font-mono")
+        hash_id = hash_element.get_text(strip=True) if hash_element else None
+
+        tags.append(
+            {
+                "title": tag_name,
+                "size": size,
+                "context_window": context_window,
+                "input_types": input_types,
+                "updated": updated,
+                "hash": hash_id,
+            }
         )
 
-        if metadata_div:
-            # Extract metadata values
-            metadata_text = metadata_div.text.strip()
-            # Parse the metadata string
-            # Example: "2887c3d03e74 • 2.5GB • 8 weeks ago"
-            parts = metadata_text.split("•")
-            hash_id = parts[0].strip()
-            size = parts[1].strip()
-            time_ago = parts[2].strip()
-
-            results.append(
-                {"title": title, "hash": hash_id, "size": size, "updated": time_ago}
-            )
-
-    return results
+    return tags
 
 
 async def list_remote_models(client: httpx.AsyncClient) -> list[str] | None:
@@ -266,30 +306,47 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
                         client=client, model_name=model_selection[0]
                     )
             else:
-                with console.status("Fetching model tags", spinner="dots"):
-                    model_tags = await list_remote_model_tags(
-                        model_name=model_selection[0], client=client
-                    )
+                # with console.status("Fetching model tags", spinner="dots"):
+                model_tags = await list_remote_model_tags(
+                    model_name=model_selection[0], client=client
+                )
             if not model_tags:
                 print(
                     f"❌ Failed fetching tags for: {model_selection}. Please try again."
                 )
                 sys.exit(1)
 
-            max_length = max(
-                len(f"{model_selection}:{tag['title']}") for tag in model_tags
-            )
+            title_max = size_max = context_window_max = input_type_max = updated_max = 0
+            COLUMN_PADDING = 8
+            for tag in model_tags:
+                title_max = max(title_max, len(tag.get("title", "")))
+                size_max = max(size_max, len(tag.get("size", "")))
+                context_window_max = max(
+                    context_window_max, len(tag.get("context_window", ""))
+                )
+                input_type_max = max(input_type_max, len(tag.get("input_types", "")))
+                updated_max = max(updated_max, len(tag.get("updated", "")))
 
             if hugging_face:
                 model_name_with_tags = [
-                    f"{tag['title']:<{max_length}}{tag['size']:<{max_length}}{tag['updated']}"
+                    f"{tag['title']:<{title_max + COLUMN_PADDING}}{tag['size']:<{size_max +COLUMN_PADDING}}{tag['updated']}"
                     for tag in model_tags
                 ]
             else:
-                model_name_with_tags = [
-                    f"{model_selection[0]}:{tag['title']:<{max_length + 5}}{tag['size']:<{max_length + 5}}{tag['updated']}"
-                    for tag in model_tags
-                ]
+                model_name_with_tags = []
+                for tag in model_tags:
+                    display = f"{model_selection[0]}:{tag['title']:<{title_max + COLUMN_PADDING}}{tag['size']:<{size_max+COLUMN_PADDING}}"
+
+                    if tag.get("context_window"):
+                        display += f"{tag['context_window']:<{context_window_max + COLUMN_PADDING}}"
+
+                    if tag.get("input_types"):
+                        display += f"{','.join(tag['input_types']):<{input_type_max + COLUMN_PADDING}}"
+
+                    if tag.get("updated"):
+                        display += f"{tag['updated']}"
+
+                    model_name_with_tags.append(display)
             selected_model_with_tag = handle_interaction(
                 model_name_with_tags, title="🔖 Select tag/quantization:\n"
             )
@@ -312,7 +369,7 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
                     out = f"Status: {data.get('status')} | Completed: {format_bytes(data.get('completed'))}/{format_bytes(data.get('total'))}"
                     print(f"{out:<{screen_padding}}", end="\r", flush=True)
 
-                print(f'\r{" " * screen_padding}\r')  # Clear screen
+                print(f"\r{' ' * screen_padding}\r")  # Clear screen
                 print(f"✅ {final_model} model is ready for use!\n\n>>> olm run\n")
             except Exception as e:
                 print(f"❌ Failed downloading {final_model}\n{str(e)}")
