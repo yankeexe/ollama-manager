@@ -7,7 +7,8 @@ import ollama
 from bs4 import BeautifulSoup, SoupStrainer
 from rich.console import Console
 
-from ollama_manager.utils import coro, handle_interaction, humanized_relative_time
+from ollama_manager.utils import handle_interaction, humanized_relative_time
+import asyncio
 
 
 def extract_quantization(text):
@@ -214,25 +215,7 @@ async def list_hugging_face_model_quantization(
     return payload
 
 
-@click.command(name="pull")
-@click.option(
-    "--hugging_face",
-    "-hf",
-    help="Pull models from Hugging Face",
-    type=bool,
-    default=False,
-    is_flag=True,
-)
-@click.option("--query", "-q", help="Query for hugging face model", type=str)
-@click.option(
-    "--limit",
-    "-l",
-    help="Limit the number of output from hugging face. Default is 20",
-    type=int,
-    default=20,
-)
-@coro
-async def pull_model(hugging_face: bool, query: str, limit: int):
+async def pull_model_async(hugging_face: bool, query: str, limit: int):
     """
     Pull models from Ollama library:
 
@@ -334,3 +317,29 @@ async def pull_model(hugging_face: bool, query: str, limit: int):
                 print(f"✅ {final_model} model is ready for use!\n\n>>> olm run\n")
             except Exception as e:
                 print(f"❌ Failed downloading {final_model}\n{str(e)}")
+
+
+@click.command(name="pull")
+@click.option(
+    "--hugging_face",
+    "-hf",
+    help="Pull models from Hugging Face",
+    is_flag=True,
+    default=False,
+)
+@click.option("--query", "-q", help="Query for hugging face model", type=str)
+@click.option(
+    "--limit",
+    "-l",
+    help="Limit the number of output from hugging face. Default is 20",
+    type=int,
+    default=20,
+)
+def pull_model(hugging_face: bool, query: str, limit: int):
+    """
+    Pull models from Ollama library:
+
+    https://ollama.dev/search
+    """
+
+    asyncio.run(pull_model_async(hugging_face, query, limit))
