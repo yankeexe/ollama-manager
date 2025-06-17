@@ -54,6 +54,10 @@ olm pull -hf -q llama3.2
 # With limit:
 
 olm pull -hf -q llama3.2 -l 10
+
+# With multimodal capabilities:
+
+olm pull -hf -q llama -mm
 ```
 
 ### Delete Local Model/s
