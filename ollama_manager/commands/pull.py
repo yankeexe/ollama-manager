@@ -163,10 +163,11 @@ async def list_remote_models(client: httpx.AsyncClient) -> list[str] | None:
 
 
 async def list_hugging_face_models(
-    client: httpx.AsyncClient, limit: int, query: str
+    client: httpx.AsyncClient, limit: int, query: str, multimodal: bool
 ) -> list[dict[str, str]]:
     BASE_API_ENDPOINT = "https://huggingface.co/api/models"
     params = {
+        "pipeline_tag": "image-text-to-text" if multimodal else "text-generation",
         "filter": "gguf",
         "sort": "downloads",
         "direction": "-1",
@@ -228,7 +229,9 @@ async def list_hugging_face_model_quantization(
     return payload
 
 
-async def pull_model_async(hugging_face: bool, query: str, limit: int):
+async def pull_model_async(
+    hugging_face: bool, query: str, limit: int, multimodal: bool
+):
     """
     Pull models from Ollama library:
 
@@ -242,7 +245,9 @@ async def pull_model_async(hugging_face: bool, query: str, limit: int):
                 query = input("🤗 hf search: ")
 
             with console.status("Fetching models from Hugging Face", spinner="dots"):
-                models = await list_hugging_face_models(client, limit, query)
+                models = await list_hugging_face_models(
+                    client, limit, query, multimodal
+                )
         else:
             with console.status(
                 "Fetching models from Ollama directory", spinner="dots"
@@ -336,7 +341,14 @@ async def pull_model_async(hugging_face: bool, query: str, limit: int):
 @click.option(
     "--hugging_face",
     "-hf",
-    help="Pull models from Hugging Face",
+    help="Pull models from Hugging Face (filter: gguf & pipeline_tag: text-generation)",
+    is_flag=True,
+    default=False,
+)
+@click.option(
+    "--multimodal",
+    "-mm",
+    help="Filter Hugging Face search query to list multimodal models (pipeline_tag: image-text-to-text)",
     is_flag=True,
     default=False,
 )
@@ -348,11 +360,11 @@ async def pull_model_async(hugging_face: bool, query: str, limit: int):
     type=int,
     default=20,
 )
-def pull_model(hugging_face: bool, query: str, limit: int):
+def pull_model(hugging_face: bool, query: str, limit: int, multimodal: bool):
     """
     Pull models from Ollama library:
 
     https://ollama.dev/search
     """
 
-    asyncio.run(pull_model_async(hugging_face, query, limit))
+    asyncio.run(pull_model_async(hugging_face, query, limit, multimodal))
