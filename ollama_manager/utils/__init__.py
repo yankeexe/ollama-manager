@@ -1,6 +1,4 @@
-import asyncio
 import sys
-from functools import wraps
 
 import ollama
 import requests
@@ -8,14 +6,6 @@ from simple_term_menu import TerminalMenu
 from ollama._types import ListResponse
 
 import datetime
-
-
-def coro(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        return asyncio.run(f(*args, **kwargs))
-
-    return wrapper
 
 
 def get_session() -> requests.Session:
