@@ -19,14 +19,27 @@ def extract_quantization(text):
         text: The model filename string.
 
     Returns:
-        The quantization string (e.g., "Q2_K", "IQ4_K") or None if not found.
+        The quantization string (e.g., "Q2_K", "IQ4_K", "F16", "Q4_0") or None if not found.
     """
-    match = re.search(r"IQ\w+\.", text)  # Check for "IQ" first
+    patterns = [
+        r"IQ\d+[_-]?[KM]?",  # IQ4_K, IQ2_M, IQ4K
+        r"Q\d+[_-]?[KM]?",  # Q4_K, Q5_K, Q8_0, Q2K
+        r"F16",  # F16 precision
+        r"F32",  # F32 precision
+        r"E5",  # E5 quantization
+        r"GPTQ",  # GPTQ quantization
+        r"AWQ",  # AWQ quantization
+        r"[KQ]\d+_\d+",  # K4_0, Q6_K, etc.
+    ]
+
+    combined_pattern = "|".join(f"({p})" for p in patterns)
+
+    match = re.search(combined_pattern, text, re.IGNORECASE)
     if match:
-        return match.group(0)[:-1]
-    match = re.search(r"Q\w+\.", text)  # Check for "Q" if "IQ" not found
-    if match:
-        return match.group(0)[:-1]
+        for group in match.groups():
+            if group:
+                return group
+
     return None
 
 
