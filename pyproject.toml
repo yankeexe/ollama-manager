@@ -28,7 +28,7 @@ dependencies = [
     "ollama==0.5.1",
     "requests==2.32.4",
     "simple-term-menu==1.6.6",
-    "textual==3.5.0",
+    "textual==3.7.1",
 ]
 
 [project.optional-dependencies]
