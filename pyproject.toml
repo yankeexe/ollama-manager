@@ -36,7 +36,7 @@ dev = [
     "ruff==0.12.5"
 ]
 
-ui =["streamlit==1.47.0"]
+ui =["streamlit==1.47.1"]
 
 
 [project.urls]
