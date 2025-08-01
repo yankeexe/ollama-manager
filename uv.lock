@@ -475,7 +475,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.12.5" },
     { name = "simple-term-menu", specifier = "==1.6.6" },
     { name = "streamlit", marker = "extra == 'ui'", specifier = "==1.47.0" },
-    { name = "textual", specifier = "==4.0.0" },
+    { name = "textual", specifier = "==5.1.1" },
 ]
 provides-extras = ["dev", "ui"]
 
@@ -750,11 +750,11 @@ wheels = [
 
 [[package]]
 name = "pygments"
-version = "2.19.1"
+version = "2.19.2"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/7c/2d/c3338d48ea6cc0feb8446d8e6937e1408088a72a39937982cc6111d17f84/pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f", size = 4968581, upload-time = "2025-01-06T17:26:30.443Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b0/77/a5b8c569bf593b0140bde72ea885a803b82086995367bf2037de0159d924/pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887", size = 4968631, upload-time = "2025-06-21T13:39:12.283Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/0b/9fcc47d19c48b59121088dd6da2488a49d5f72dacf8262e2790a1d2c7d15/pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c", size = 1225293, upload-time = "2025-01-06T17:26:25.553Z" },
+    { url = "https://files.pythonhosted.org/packages/c7/21/705964c7812476f378728bdf590ca4b771ec72385c533964653c68e86bdc/pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b", size = 1225217, upload-time = "2025-06-21T13:39:07.939Z" },
 ]
 
 [[package]]
@@ -1001,17 +1001,18 @@ wheels = [
 
 [[package]]
 name = "textual"
-version = "4.0.0"
+version = "5.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", extra = ["linkify", "plugins"] },
     { name = "platformdirs" },
+    { name = "pygments" },
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f1/22/a2812ab1e5b0cb3a327a4ea79b430234c2271ba13462b989f435b40a247d/textual-4.0.0.tar.gz", hash = "sha256:1cab4ea3cfc0e47ae773405cdd6bc2a17ed76ff7b648379ac8017ea89c5ad28c", size = 1606128, upload-time = "2025-07-12T09:41:20.812Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/19/7976efe4b6258e065f9ed9978b5d930a0e93b0de5b19197011a941df56bf/textual-5.1.1.tar.gz", hash = "sha256:8df8830155046660592c8926e18d43c712dfe4e8a1351a98b1138f9b64ec14dc", size = 1555479, upload-time = "2025-07-31T19:08:53.887Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d8/e4/ebe27c54d2534cc41d00ea1d78b783763f97abf3e3d6dd41e5536daa52a5/textual-4.0.0-py3-none-any.whl", hash = "sha256:214051640f890676a670aa7d29cd2a37d27cfe6b2cf866e9d5abc3b6c89c5800", size = 692382, upload-time = "2025-07-12T09:41:18.828Z" },
+    { url = "https://files.pythonhosted.org/packages/90/db/30dfedb040305789403447a471d90945a8445a71e8ed29c4ba331847cf10/textual-5.1.1-py3-none-any.whl", hash = "sha256:34a25b16c6b4efe90247825b77834e620c0f96c899f442a946ce8f3e13c420ba", size = 700600, upload-time = "2025-07-31T19:08:51.683Z" },
 ]
 
 [[package]]
