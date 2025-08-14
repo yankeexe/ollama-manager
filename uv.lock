@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -474,7 +474,7 @@ requires-dist = [
     { name = "requests", specifier = "==2.32.4" },
     { name = "ruff", marker = "extra == 'dev'", specifier = "==0.12.5" },
     { name = "simple-term-menu", specifier = "==1.6.6" },
-    { name = "streamlit", marker = "extra == 'ui'", specifier = "==1.47.0" },
+    { name = "streamlit", marker = "extra == 'ui'", specifier = "==1.48.1" },
     { name = "textual", specifier = "==4.0.0" },
 ]
 provides-extras = ["dev", "ui"]
@@ -963,7 +963,7 @@ wheels = [
 
 [[package]]
 name = "streamlit"
-version = "1.47.0"
+version = "1.48.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "altair" },
@@ -985,9 +985,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "watchdog", marker = "sys_platform != 'darwin'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/10/46e1e71fd52d7137402f5b2abee20c57d315dd9f8a88e123f03c36ad6260/streamlit-1.47.0.tar.gz", hash = "sha256:b4ff3b8fa01de1e1dc572930b420897f0870ed2ae44e23a815999b62c0778c30", size = 9540444, upload-time = "2025-07-16T16:26:49.864Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e2/1b/eb83cf2a11961338d23deed0530e3ccc1db7b4ab497b0b4d94886205d0c0/streamlit-1.48.1.tar.gz", hash = "sha256:c6e2a9f24471746bbeaa54a288f5fdfc6e2bcf3ba9a9753fde5d49ed424391f1", size = 9524808, upload-time = "2025-08-13T12:03:55.727Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/62/b1/44bd5f0eb1a6d9fa045db1e8bca77dc6751c12f7dacebf820ee708ea5acc/streamlit-1.47.0-py3-none-any.whl", hash = "sha256:c10dbfdf832c3fb8e5b62c7a5d1eaaae460dcf332a3a1623f7a072a6303100ee", size = 9944331, upload-time = "2025-07-16T16:26:46.801Z" },
+    { url = "https://files.pythonhosted.org/packages/e0/21/ebf8942e939b96e4040d2285c9b71d42f317618a3b656aa67f95f505b241/streamlit-1.48.1-py3-none-any.whl", hash = "sha256:1da4081c8cc23d574c4ab66f0bb59d6a6000ecf2f06b35242d56cfe16f2bd612", size = 9928586, upload-time = "2025-08-13T12:03:52.816Z" },
 ]
 
 [[package]]
