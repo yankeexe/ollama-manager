@@ -33,7 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff==0.12.5"
+    "ruff==0.12.9"
 ]
 
 ui =["streamlit==1.47.0"]
